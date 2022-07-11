@@ -1,0 +1,99 @@
+---
+# input for complete UCE seqs - 9 populations #
+
+comparisons:
+- comparison:
+    path: "../../Att_bol_concatenado.nex"
+- comparison:
+    path: "../../Cra_gut_concatenado.nex"
+- comparison:
+    path: "../../Cra_vul_concatenado.nex"
+- comparison:
+    path: "../../Fur_min_concatenado.nex"
+- comparison:
+    path: "../../Kni_ore_scl_concatenado.nex"
+- comparison:
+    path: "../../Maz_pro_concatenado.nex"
+- comparison:
+    path: "../../Myi_fla_concatenado.nex"
+- comparison:
+    path: "../../Nas_lon_concatenado.nex"
+- comparison:
+    path: "../../Sti_nap_concatenado.nex"
+       
+event_model_prior:
+    dirichlet_process:
+        parameters:
+            concentration:
+                estimate: true
+                prior:
+                    gamma_distribution: # improves the prior probability distribution (most events with prob > 0.05 or < 0.85; but n = 15 and 16 < 0.02 )
+                        shape: 0.7
+                        scale: 8
+                
+event_time_prior:
+    uniform_distribution:
+         min: 1000.0
+         max: 500000.0   # uninformative uniform prior
+
+mcmc_settings:
+    chain_length: 150000
+    sample_frequency: 100
+
+# Operator settings recommendation is to leave default values and only change in case of convergence issues.
+#operator_settings:
+#    auto_optimize: true
+#    auto_optimize_delay: 1000
+#    operators:
+#        ConcentrationScaler:
+#            weight: 3.0
+#            scale: 0.1
+#        ModelOperator:
+#            weight: 10.0
+#            number_of_auxiliary_categories: 4
+#        TimeSizeRateMixer:
+#            weight: 5.0
+#            scale: 0.02
+#        TimeSizeRateScaler:
+#            weight: 0.0
+#            scale: 0.02
+#        TimeRootSizeMixer:
+#            weight: 3.0
+#            scale: 0.05
+#        EventTimeScaler:
+#            weight: 1.0
+#            scale: 0.02
+
+global_comparison_settings:
+    ploidy: 2
+    genotypes_are_diploid: false # one haploid individual per row
+    markers_are_dominant: false
+    population_name_delimiter: "-"
+    population_name_is_prefix: true
+    constant_sites_removed: false
+    equal_population_sizes: false
+    parameters:
+        population_size:
+            value: 500000.0 # uninformative
+            estimate: true
+            prior: # uninformative
+                uniform_distribution:
+                    min: 1000.0
+                    max: 1000000.0
+        root_relative_population_size:
+            value: 1.0
+            estimate: true
+            prior:
+                exponential_distribution:
+                    rate: 1.0    # same setting as in Oaks et al. (2020) - mean of 1.0
+        freq_1:
+            value: 0.5
+            estimate: false
+
+        mutation_rate:
+            value: 0.0000000025 # substitutions per site per generation; I am assuming g = 1 for all spp.
+            estimate: true
+            prior:
+                uniform_distribution:
+                    min: 0.0000000015
+                    max: 0.0000000035
